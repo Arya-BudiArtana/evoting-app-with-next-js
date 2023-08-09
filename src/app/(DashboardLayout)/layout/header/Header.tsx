@@ -24,27 +24,35 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
   })
   const router = useRouter()
   const [profil, setProfil] = useState()
-  useEffect(() => {
-    (async () => {
-      if (session?.user.success === false) {
-        router.push("/authentication/login");
-      } else {
-        try {
-          const res = await fetch("your api", {
-            method: "GET",
-            headers: {
-              authorization: `Bearer ${session?.user.data}`
-            }
-          });
 
-          const response = await res.json();
-          setProfil(response.data.name);
-        } catch (error) {
-          console.error("Error fetching profile:", error);
+  const handleFetchProfile = async () => {
+    if (!session) {
+      return;
+    }
+    try {
+      const res = await fetch('your api', {
+        method: 'GET',
+        headers: {
+          authorization: `Bearer ${session.user.data}`
         }
+      });
+
+      const response = await res.json();
+      if (response.success) {
+        setProfil(response.data.name);
+      } else {
+        router.push('/authentication/login');
       }
-    })();
-  }, [session, router]);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  if (session?.user.success === false) {
+    router.push('/authentication/login');
+  } else {
+    handleFetchProfile(); // Fetch profile data
+  }
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',

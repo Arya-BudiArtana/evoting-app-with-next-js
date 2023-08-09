@@ -44,6 +44,10 @@ export const authOptions: NextAuthOptions = {
             session.user = token as any
             return session
         },
+
+        // async redirect({ url, baseUrl }) {
+        //     return baseUrl
+        // },
     },
 
     pages: {
