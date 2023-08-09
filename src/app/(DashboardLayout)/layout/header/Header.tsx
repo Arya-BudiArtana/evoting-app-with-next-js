@@ -1,10 +1,14 @@
 import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
 import PropTypes from 'prop-types';
-
+import {useSession} from "next-auth/react"
 // components
+import { useEffect } from "react"
 import Profile from './Profile';
 import { IconBellRinging, IconMenu } from '@tabler/icons-react';
+import { redirect, useRouter } from "next/navigation";
+import { authOptions } from '../../../../pages/api/auth/[...nextauth]'
+import { getServerSession } from "next-auth/next"
 
 interface ItemType {
   toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
@@ -12,9 +16,19 @@ interface ItemType {
 
 const Header = ({toggleMobileSidebar}: ItemType) => {
 
-  // const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
-  // const lgDown = useMediaQuery((theme) => theme.breakpoints.down('lg'));
+  const {data:session} = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/authentication/login')
+    }
+  })
+  const router = useRouter()
 
+  useEffect(() => {
+    if (session?.user.success === true) {
+      router.push("/authentication/login");
+    }
+  }, [session, router]);
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',
@@ -46,8 +60,6 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         >
           <IconMenu width="20" height="20" />
         </IconButton>
-
-
         <IconButton
           size="large"
           aria-label="show 11 new notifications"

@@ -11,57 +11,27 @@ import {
 import Link from "next/link";
 import { useState, useRef, FormEvent } from "react"
 import { useRouter } from "next/navigation";
-
+import { signIn } from 'next-auth/react';
 import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
 
-interface loginType {
-  title?: string;
-  subtitle?: JSX.Element | JSX.Element[];
-  subtext?: JSX.Element | JSX.Element[];
-}
+const AuthLogin = () => {
 
-const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
-
-  let Api = `http://127.0.0.1:8000/api/login`;
-
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [Error, setError] = useState(null)
-
-  const UsernameRef = useRef<HTMLInputElement | null>(null)
-  const PasswordRef = useRef<HTMLInputElement | null>(null)
+  const UsernameRef = useRef("")
+  const PasswordRef = useRef("")
 
   const router = useRouter();
 
-  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = {
-      username: UsernameRef.current?.value,
-      password: PasswordRef.current?.value
-    }
-    fetch(Api, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+  const onSubmit = async () => {
+    const result = await signIn("credentials", {
+      username: UsernameRef.current,
+      password: PasswordRef.current,
+      redirect: true,
+      callbackUrl: "/"
     })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.success) {
-          console.log("Login successful!");
-          router.push("/");
-        } else {
-          setError(response.message);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   }
 
   return (
-    <form onSubmit={handleFormSubmit}>
+    <>
       <Stack>
         <Box>
           <Typography
@@ -74,10 +44,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             Username
           </Typography>
           <CustomTextField variant="outlined" fullWidth
-            value={username}
-            inputRef={UsernameRef}
-            onChange={(e:any) => setUsername(e.target.value)}
-          />
+            onChange={(e:any) => (UsernameRef.current = e.target.value)} />
         </Box>
         <Box mt="25px">
           <Typography
@@ -90,9 +57,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             Password
           </Typography>
           <CustomTextField type="password" variant="outlined" fullWidth
-            value={password}
-            inputRef={PasswordRef}
-            onChange={(e:any) => setPassword(e.target.value)} />
+          onChange={(e:any) => (PasswordRef.current = e.target.value)}/>
         </Box>
         <Stack
           justifyContent="space-between"
@@ -126,11 +91,12 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           size="large"
           fullWidth
           type="submit"
+          onClick={onSubmit}
         >
           Sign In
         </Button>
       </Box>
-    </form>
+    </>
   )
 };
 

@@ -10,6 +10,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import {signOut, useSession} from "next-auth/react"
 
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 
@@ -67,7 +68,7 @@ const Profile = () => {
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>My Profile</ListItemText>
+          <ListItemText>Profile</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
@@ -88,6 +89,7 @@ const Profile = () => {
             color="primary"
             component={Link}
             fullWidth
+            onClick={()=> signOut()}
           >
             Logout
           </Button>

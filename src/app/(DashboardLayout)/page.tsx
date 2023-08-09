@@ -8,8 +8,13 @@ import RecentTransactions from '@/app/(DashboardLayout)/components/dashboard/Rec
 import ProductPerformance from '@/app/(DashboardLayout)/components/dashboard/ProductPerformance';
 import Blog from '@/app/(DashboardLayout)/components/dashboard/Blog';
 import MonthlyEarnings from '@/app/(DashboardLayout)/components/dashboard/MonthlyEarnings';
+import { useRouter } from "next/navigation";
+import { hasCookie } from 'cookies-next';
+import { useState, useRef, useEffect } from "react"
 
 const Dashboard = () => {
+  const router = useRouter();
+
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
