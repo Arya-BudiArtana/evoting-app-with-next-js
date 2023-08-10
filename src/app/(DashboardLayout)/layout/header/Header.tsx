@@ -1,27 +1,26 @@
 import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
-import {useSession} from "next-auth/react"
+import { useSession } from "next-auth/react"
 // components
 import { useEffect, useState } from "react"
 import Profile from './Profile';
 import { IconBellRinging, IconMenu } from '@tabler/icons-react';
 import { redirect, useRouter } from "next/navigation";
-import { authOptions } from '../../../../pages/api/auth/[...nextauth]'
-import { getServerSession } from "next-auth/next"
 
 interface ItemType {
-  toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
+  toggleMobileSidebar: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-const Header = ({toggleMobileSidebar}: ItemType) => {
+const Header = ({ toggleMobileSidebar }: ItemType) => {
 
-  const {data:session} = useSession({
+  const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
       redirect('/authentication/login')
     }
   })
+
   const router = useRouter()
   const [profil, setProfil] = useState()
 
@@ -30,7 +29,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
       return;
     }
     try {
-      const res = await fetch('your api', {
+      const res = await fetch('https://api-evoting.befind.id/api/profil', {
         method: 'GET',
         headers: {
           authorization: `Bearer ${session.user.data}`
@@ -38,6 +37,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
       });
 
       const response = await res.json();
+
       if (response.success) {
         setProfil(response.data.name);
       } else {
@@ -51,7 +51,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
   if (session?.user.success === false) {
     router.push('/authentication/login');
   } else {
-    handleFetchProfile(); // Fetch profile data
+    handleFetchProfile();
   }
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
@@ -80,24 +80,13 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
               lg: "none",
               xs: "inline",
             },
-          }}
-        >
+          }}>
+
           <IconMenu width="20" height="20" />
-        </IconButton>
-        <IconButton
-          size="large"
-          aria-label="show 11 new notifications"
-          color="inherit"
-          aria-controls="msgs-menu"
-          aria-haspopup="true"
-        >
-          <Badge variant="dot" color="primary">
-            <IconBellRinging size="21" stroke="1.5" />
-          </Badge>
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-        <Typography variant="h6">Hy, {profil}</Typography>
+          <Typography variant="h6">Hy, {profil}</Typography>
           <Profile />
         </Stack>
       </ToolbarStyled>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { styled } from "@mui/material";
+import { styled, Typography } from "@mui/material";
 import Image from "next/image";
 
 const LinkStyled = styled(Link)(() => ({
@@ -11,9 +11,7 @@ const LinkStyled = styled(Link)(() => ({
 
 const Logo = () => {
   return (
-    <LinkStyled href="/">
-      <Image src="/images/logos/dark-logo.svg" alt="logo" height={70} width={174} priority />
-    </LinkStyled>
+    <Typography mt="20px" mx={"10px"} variant="h2">E-Voting</Typography>
   );
 };
 

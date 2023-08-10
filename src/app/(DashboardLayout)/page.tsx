@@ -1,50 +1,59 @@
 'use client'
-import { Grid, Box } from '@mui/material';
-import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
-// components
-import SalesOverview from '@/app/(DashboardLayout)/components/dashboard/SalesOverview';
-import YearlyBreakup from '@/app/(DashboardLayout)/components/dashboard/YearlyBreakup';
-import RecentTransactions from '@/app/(DashboardLayout)/components/dashboard/RecentTransactions';
-import ProductPerformance from '@/app/(DashboardLayout)/components/dashboard/ProductPerformance';
-import Blog from '@/app/(DashboardLayout)/components/dashboard/Blog';
-import MonthlyEarnings from '@/app/(DashboardLayout)/components/dashboard/MonthlyEarnings';
-import { useRouter } from "next/navigation";
-import { hasCookie } from 'cookies-next';
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useState } from "react";
+import { Grid, Box } from "@mui/material";
+import { useSession } from "next-auth/react";
+import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
+import Candidate from "@/app/(DashboardLayout)/components/dashboard/Candidates";
+import Description from "@/app/(DashboardLayout)/components/dashboard/Desc";
 
 const Dashboard = () => {
-  const router = useRouter();
+  const { data: session } = useSession(); // Access session data using useSession
+  const [profileData, setProfileData] = useState({});
+  const [voteData, setVoteData] = useState<any>({});
+
+  useEffect(() => {
+    if (session) {
+      fetch("your api", {
+        headers: {
+          authorization: `Bearer ${session.user.data}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setProfileData(data.data);
+          fetch(`your api/${data.data.vote_id}`, {
+            headers: {
+              authorization: `Bearer ${session.user.data}`,
+            },
+          })
+            .then((response) => response.json())
+            .then((voteData) => {
+              setVoteData(voteData);
+            })
+            .catch((error) => {
+              console.error("Error fetching vote data:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error fetching profile data:", error);
+        });
+    }
+  }, [session]); // Re-run effect when session changes
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
         <Grid container spacing={3}>
-          <Grid item xs={12} lg={8}>
-            <SalesOverview />
-          </Grid>
-          <Grid item xs={12} lg={4}>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <YearlyBreakup />
-              </Grid>
-              <Grid item xs={12}>
-                <MonthlyEarnings />
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} lg={4}>
-            <RecentTransactions />
-          </Grid>
-          <Grid item xs={12} lg={8}>
-            <ProductPerformance />
+          <Grid item xs={12}>
+            <Description voteData={voteData}/>
           </Grid>
           <Grid item xs={12}>
-            <Blog />
+            <Candidate />
           </Grid>
         </Grid>
       </Box>
     </PageContainer>
-  )
-}
+  );
+};
 
 export default Dashboard;
