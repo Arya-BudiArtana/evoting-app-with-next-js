@@ -14,6 +14,7 @@ interface ItemType {
 
 const Header = ({ toggleMobileSidebar }: ItemType) => {
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
@@ -29,7 +30,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
       return;
     }
     try {
-      const res = await fetch('https://api-evoting.befind.id/api/profil', {
+      const res = await fetch(`${apiBaseUrl}/api/profil`, {
         method: 'GET',
         headers: {
           authorization: `Bearer ${session.user.data}`

@@ -7,13 +7,15 @@ import Candidate from "@/app/(DashboardLayout)/components/dashboard/Candidates";
 import Description from "@/app/(DashboardLayout)/components/dashboard/Desc";
 
 const Dashboard = () => {
+  
+  const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
   const { data: session } = useSession(); // Access session data using useSession
   const [profileData, setProfileData] = useState({});
   const [voteData, setVoteData] = useState<any>({});
 
   useEffect(() => {
     if (session) {
-      fetch("your api", {
+      fetch(`${apiBaseUrl}/api/profil`, {
         headers: {
           authorization: `Bearer ${session.user.data}`,
         },
@@ -21,7 +23,7 @@ const Dashboard = () => {
         .then((response) => response.json())
         .then((data) => {
           setProfileData(data.data);
-          fetch(`your api/${data.data.vote_id}`, {
+          fetch(`${apiBaseUrl}/api/evote/get-by-id/${data.data.vote_id}`, {
             headers: {
               authorization: `Bearer ${session.user.data}`,
             },
